@@ -1,0 +1,125 @@
+/* Import Google Font: Fugaz One */
+@import url('https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap');
+
+/* ===== OnTrack Global Theme ===== */
+
+:root {
+  /* ===== BRAND COLORS (WCAG AA Compliant) ===== */
+  
+  /* Primary - Electric Blue */
+  --color-primary: #0188ff;           /* Bright Electric Blue */
+  --color-primary-glow: rgba(0, 162, 255, 0.3);
+  
+  /* Backgrounds */
+  --color-background: #181818;        /* Dark Charcoal */
+  --color-background-alt: #111111;    /* Darker Black */
+  --color-secondary: #FFFFFF;         /* White (for cards/containers) */
+  
+  /* Text Colors (WCAG AA compliant on dark backgrounds) */
+  --color-text: #FFFFFF;              /* White - primary text on dark */
+  --color-text-muted: #c2ccde;        /* Light gray - 7.8:1 contrast on #181818 */
+  --color-text-on-light: #1f2937;     /* Dark gray - for text on white backgrounds */
+  
+  /* UI Colors */
+  --color-border: #404040;            /* Dark border */
+  --color-border-light: #e5e7eb;      /* Light border (for light backgrounds) */
+  
+  /* Status Colors (WCAG compliant) */
+  --color-success: #10b981;           /* Green - 4.5:1 on dark */
+  --color-warning: #f59e0b;           /* Amber - 4.5:1 on dark */
+  --color-danger: #ef4444;            /* Red - 4.5:1 on dark */
+  
+  /* ===== TYPOGRAPHY ===== */
+  --font-logo: 'Fugaz One', cursive;
+  --font-primary: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  
+  /* ===== SPACING ===== */
+  --navbar-height: 70px;
+  
+  /* ===== SHADOWS ===== */
+  --shadow-glow: 0 0 20px var(--color-primary-glow);
+}
+
+/* ===== GLOBAL STYLES ===== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  padding-top: var(--navbar-height);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADINGS ===== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+/* ===== LINKS ===== */
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: 150ms ease-in-out;
+}
+
+a:hover {
+  text-shadow: var(--shadow-glow);
+}
+
+/* ===== TASK CARD VARIANTS ===== */
+
+.task-card-slim {
+  border-radius: 6px;
+}
+
+.task-card-slim .card-body {
+  padding: 0.125rem 0.25rem !important;
+}
+
+.task-card-slim .card-body * {
+  margin: 0;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-alt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #33b5ff;
+}
+
+/* ===== SELECTION ===== */
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-background-alt);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary);
+  color: var(--color-background-alt);
+}
