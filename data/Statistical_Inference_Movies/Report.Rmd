@@ -1,0 +1,269 @@
+---
+title: "Statistical Inference Report"
+date: "04-30-2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+# Group Members
+- Annaliese Bero
+- Mukhriz Mohamad
+- Julie Chen
+- Kayla Hendrikse
+
+# Introduction 
+
+Making a movie can be incredibly expensive, sometimes costing hundreds of millions of dollars. But does spending more money actually help a movie earn more at the box office? This is an important question for directors and producers working in the film industry. If there's a clear connection between budget and earnings, it could help guide decisions about how much to invest in a project and whether a bigger budget is likely to lead to a bigger return.
+
+Our question of interest is to see if there is a relationship between production cost of a movie and the worldwide gross revenue made from the movie. Simply, do bigger budget movie lead to bigger revenue?
+
+We find strong evidence that movies with higher production costs tend to earn more worldwide revenue.
+
+# Background
+
+## Data sources
+- Raw data: The dataset used in this analysis was sourced from [Kaggle](https://www.kaggle.com/datasets/mitchellharrison/top-500-movies-budget), a database with a multitude of data sets for public use, but the original source of the data set comes from [The Numbers](https://www.the-numbers.com/movie/budgets/all), which is a film industry data website that tracks box office revenue in a systematic, algorithmic way. 
+
+
+
+## Variables
+`production_cost_millions`: The budget needed to produce the movie (in million USD)
+`worldwide_gross_millions`: The gross box office of the film (in million USD)
+
+## Data structure
+- Single Row Representation: A single row of the dataset represents different movies and their production cost/income.
+- Population representation: We can assume the larger population would be the list of all pop-culture movies. For this dataset, they take the top 500 most expensive films based on production cost.
+- Sample Size: The original sample size was 500, but after removing the missing values the sample size was 492 movies. Because this is a larger data set, we assume this dataset is sufficient to provide a stable basis for hypothesis testing
+
+## Data Cleaning and Processing
+The dataset was processed and cleaned to ensure accuracy and relevance for analysis. Missing values were removed and only relevant columns (title, production cost, and worldwide gross) were kept. To make the numbers easier to work with and avoid dealing with values in the billions, we converted both production_cost and worldwide_gross into millions of USD, creating the variables production_cost_millions and worldwide_gross_millions.
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+movies<- read_csv("top-500-movies.csv")
+##selecting only the relevant columns, filtering the one without worldwide_gross, sorting the production cost from low to high,
+cleaned_movies <- movies %>% select(title,production_cost,worldwide_gross) %>% 
+  filter(!worldwide_gross==0) %>%
+  arrange(production_cost) %>%
+  mutate(production_cost_millions = production_cost/1e6, worldwide_gross_millions=worldwide_gross/1e6) %>% 
+  select(-production_cost, -worldwide_gross) %>%
+  relocate(production_cost_millions, .before=worldwide_gross_millions)
+
+
+
+```
+
+##Graph 
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+ggplot(cleaned_movies, aes(x = production_cost_millions, y = worldwide_gross_millions)) +
+  geom_point() +
+  labs(
+    x = "Production Cost (Millions USD)",
+    y = "Worldwide Gross Revenue (Millions USD)",
+    title = "Production Budget vs Worldwide Gross",
+     subtitle = "For the Top 500 Budget Movies"
+  ) + geom_smooth(method="lm") 
+
+```
+
+To determine the relationship between production cost (in Millions USD) and Worldwide Gross Revenue (in Millions USD), we constructed the scatterplot above. Each dot represents a single movie, with the blue line representing the linear regression trend. While there's variability in the graph itself, we can see a positive correlation between production cost and worldwide gross for the movies in our dataset, which is similar to what we predicted. The trend of production cost vs worldwide gross revenue aligns with our hypothesis of a linear relationship. 
+ 
+
+
+# Statistical Analysis
+
+In this report, we are investigating whether there is a linear relationship or correlation between the `production_cost_millions` (the cost it takes to produce a movie in million USD) and the `worldwide_gross_millions` (the box office, or the revenue the movie generates in million USD) by using simple linear regression. We construct a two sided hypothesis test because as the graph given earlier shows a glimpse of positive linear. 
+
+## Parameter of interest
+
+`Slope` $\beta_1$: Increase in gross revenue per additional 100 million USD spent on production. This describes the relationship between the production cost and worldwide gross revenue.
+
+## Type of Inference 
+We will use a one sample t-test to test for a linear relationship between production cost and worldwide gross.
+
+
+## Assumptions
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+movies_mod=lm(worldwide_gross_millions ~ production_cost_millions, cleaned_movies)
+
+
+movies_summary=summary(movies_mod)
+
+ggplot(cleaned_movies, aes(x=production_cost_millions, y= resid(movies_mod))) + geom_point() + geom_hline(yintercept=0)  +labs(x= "Production Cost (Millions USD)", y= "Residuals")
+```
+
+
+- Linearity: Linearity is satisfied as the residuals don't show an obvious curve pattern.
+- The errors appear normally distributed around zero. The residuals cluster near the center line, show symmetry. We do have some uncommon outliers, so this may affect the data.
+- Constant variance: Residuals only fan out a bit, with a couple points spreading out. However, the points that are "spread" are not obvious. 
+
+
+## Model
+For our linear regression, the model would look like:
+
+$$
+{\text{Worldwide Gross}} = -183.51 + 4.42 \cdot \text{Production Cost (in millions)}
+$$
+
+## Hypothesis
+
+$H_0: \beta_1 = 0 \quad \text{vs} \quad H_A: \beta_1 \ne 0$
+
+
+## Test Statistic 
+
+Test statistic is calculated using: 
+
+$$
+\frac{\text{Point Estimate} - \text{Parameter}_{H_0}}{\text{Standard Error}}
+$$
+
+
+where:
+
+- Point Estimate: The estimated slope from the regression of `worldwide_gross_millions` on `production_cost_millions` — this tells us how much additional revenue (in million USD) is expected for each additional million dollars spent on production.
+
+- Parameter (H₀): The slope under the null hypothesis, which is 0 — meaning we assume there is no relationship between production cost and worldwide gross.
+
+- Standard Error: The standard error of the estimated slope — it measures how much the slope estimate would vary across different samples of movies.
+
+Degrees of freedom is obtained using n (sample size) - 2 = 490
+
+- The null distribution of the test statistic is a t-distribution with 490 degrees of freedom
+
+
+## Calculating p-value
+
+ 
+
+
+## Interpretation: Performing hypothesis test for the slope at 5% significance level. Calculating test statistics, degrees of freedom and p-value
+
+Calculating p-value (in this example, a 2-tailed test) is used by the following values:
+
+Test-statistic (t): 14.477
+
+Degrees of freedom: 490
+
+P-value: 8.522944e-40
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+standard_error <- 0.3051 
+point_estimate =  4.4168 
+
+test_statistics = point_estimate/standard_error
+DF = 492-2
+2*pt(-test_statistics,DF) #since this is a two tailed test
+
+
+
+
+```
+
+
+
+> We reject the null hypothesis since the p-value is extremely lower than 0.05. Thus, we have enough evidence to suggest that as `worldwide_gross_millions` (the revenue a movie generates per million USD) changes, the `production_cost_millions` (the budget of a movie per million USD) also changes.
+
+## Confidence Interval : Building and interpreting a 95% CI 
+
+The confidence interval is calculated using the following formula:
+
+General:
+$$
+\text{Point Estimate } \pm \text{Critical Value * Standard Error of PE}
+$$
+
+Full Formula: 
+$$
+\hat{\beta}_1 \pm \text{qt(C + (1-C)/2, df = n-2)*(Standard error of PE)}
+$$
+
+```{r}
+c <- 0.95
+
+qcs = qt(c+(1-c)/2, DF)
+margin_error = qcs* standard_error
+
+point_estimate+c(-1,1)*margin_error
+```
+> We are 95% confident that the true $\hat{\beta}_1$  or the true linear relationship between `worldwide_gross_millions` and `production_cost_millions` lies between 
+(3.817334,  5.016266)
+
+> Since the CI does not include 0, we have evidence based on CI that $\hat{\beta}_1$ is not equal to 0. This is also further supported by the fact that extremely low p-value compared to the significance level of 0.05.
+
+
+
+
+# Discussion
+
+# a. Further interpretation 
+
+
+Our analysis shows that there's a correlation between how much a movie costs to make and how much it earns worldwide. Specifically, we are 95% confident that every additional $1 million spent on production is associated with an increase of about $3.82 million to $5.01 million in worldwide revenue. The p-value for this relationship is extremely small (essentially zero), far less than the commonly used significance level of 0.05, which means this result is very unlikely to have occurred by chance. Thus, this provides evidence to reject the null hypothesis and that there is a linear relationship between a movie's production budget and its worldwide gross revenue.
+
+For the general readers, the p-value tells us how likely it is to see a relationship this strong if production cost and gross earnings were not related at all. A very small p-value, like what we obtained, means that such a result would be really unlikely if there were truly no relationship. This suggests that higher production costs might be associated with higher gross revenue.
+
+While the dataset appears to have a trend, there are some movies that cost a lot but don’t earn much, and others that earn big despite smaller budgets. In short: spending more tends to help, but it’s not a guarantee of success.
+
+# b. Limitations
+
+There are a few limitations to our analysis:
+
+- The data only includes the top 500 movies by budget, so lower-budget indie hits and flops aren’t considered.
+
+- We only looked at two variables: `production_cost` and `worldwide gross`. Factors like genre, critical reviews, marketing, star power, and release timing were not included but likely have a big impact.
+
+- Although our residuals appear normally distributed and symmetric, there are some outliers, especially at higher budget levels — suggesting that variability increases with spending.
+
+# c. Additional Questions and Recommendations for Future Research
+This analysis focused only on production cost and worldwide gross, but it brought up a few questions that could be explored further:
+
+Do movies with really high budgets stop seeing big gains? (diminishing returns)
+(Ex: Do movies with extremely high budgets (e.g., over $200 million) earn proportionally less than moderately high-budget films?)
+
+Does genre matter? For example, do action movies earn more than comedies generally?
+
+How much does marketing influence revenue?
+
+Do audience ratings or reviews impact how much a movie makes?
+
+For future research, it would be helpful to have more data — like genre, cast, marketing spend, and audience scores. We could also look at profit instead of just revenue to better understand financial success.
+
+# References
+
+https://www.kaggle.com/datasets/mitchellharrison/top-500-movies-budget
+
+https://www.the-numbers.com/movie/budgets/all
+
+
+
+
+
+
+
+
+
+
+  
+      
+      
+              
+
+
+
+ 
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,32 @@
+---
+title: "project cleaned data"
+author: "Bero"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+## R Markdown
+
+
+```{r}
+movies <- read_csv("top-500-movies.csv")
+
+## selecting only the relevant columns, 
+## filtering the one without worldwide_gross, 
+## sorting the production cost from low to high
+
+cleaned_movies <- movies %>% select(title,production_cost,worldwide_gross) %>% 
+  filter(!worldwide_gross==0) %>%
+  arrange(production_cost) %>%
+  mutate(production_cost_millions = production_cost/1e6, worldwide_gross_millions=worldwide_gross/1e6) %>% 
+  select(-production_cost, -worldwide_gross) %>%
+  relocate(production_cost_millions, .before=worldwide_gross_millions)
+```
+
+
+
